@@ -88,7 +88,7 @@ function App() {
             ))}
           </div>
 
-          <div className="flex flex-col gap-y-3">
+        <div className="mt-6 bg-[#2c3e50] rounded-xl p-4 shadow-lg space-y-3">
             {filteredTodos.map((todo) => (
               <TodoItem key={todo.id} todo={todo} />
             ))}
