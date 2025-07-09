@@ -62,18 +62,15 @@ function App() {
     <TodoProvider value={{ todos, addTodo, updateTodo, deleteTodo, toggleComplete }}>
       <div className="bg-[#172842] min-h-screen w-full flex items-center justify-center">
 
-       
-        <div className="w-[90vw] max-w-[60vw] h-[90vh] max-h-[90vh] bg-gradient-to-br from-[#2e1a47] to-[#391a52] rounded-3xl shadow-2xl p-8 text-white overflow-y-auto transition-all duration-300">
+        <div className="w-[90vw] max-w-[80vw] h-[90vh] max-h-[90vh] bg-gradient-to-br from-[#2e1a47] to-[#391a52] rounded-3xl shadow-2xl p-8 text-white overflow-y-auto transition-all duration-300">
 
-        
           <h1 className="text-3xl font-bold text-center mb-6">📝 Manage Your Todos</h1>
 
-       
           <div className="mb-4">
             <TodoForm />
           </div>
 
-      
+
           <div className="flex flex-wrap justify-center gap-2 mb-6">
             {["All", "Completed", "Pending", "Work", "Study", "Personal"].map((f) => (
               <button
