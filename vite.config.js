@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/React-todo-app/', // 👈 your GitHub repo name
+  base: '/TaskNest/', 
   plugins: [
     react(),
     tailwindcss(),
