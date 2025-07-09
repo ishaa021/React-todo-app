@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { TodoProvider } from './context/TodoContext'
 import './App.css'
 import TodoForm from './components/TodoForm'
@@ -6,59 +6,95 @@ import TodoItem from './components/TodoItem'
 
 function App() {
 
-const [todos ,setTodos] = useState([])
+  const [todos, setTodos] = useState([])
+  const [filter, setFilter] = useState("All")  
 
-const addTodo = (todo) => {
-  setTodos((prev)=>[{id:Date.now(),...todo},...prev])     //adding new todo without removing the prev todos 
+  const addTodo = (todo) => {
+    setTodos((prev) => [{ id: Date.now(), ...todo }, ...prev])    
+  }
+
+  const updateTodo = (id, todo) => {
+    setTodos((prev) => prev.map((prevTodo) => (prevTodo.id === id ? todo : prevTodo)))
+  }
+
+ const deleteTodo = (id) => {
+  const todoToDelete = todos.find((t) => t.id === id);  
+
+  setTodos((prev) => prev.filter((prevTodo) => prevTodo.id !== id)); 
+
+  if (todoToDelete && todoToDelete.todo) {
+    setTimeout(() => {
+      alert(`✅ Task Completed: "${todoToDelete.todo}"`);
+    }, 300);
+  }
 }
 
-const updateTodo= (id,todo) => {
-  setTodos((prev) => prev.map((prevTodo) => (prevTodo.id=== id? todo : prevTodo)))       // here we are chacking for the todo which we hae to update using map
-}
+  const toggleComplete = (id) => {
+    setTodos((prev) =>
+      prev.map((prevTodo) =>
+        prevTodo.id === id
+          ? { ...prevTodo, completed: !prevTodo.completed }
+          : prevTodo
+      )
+    ) 
+  }
 
-const deleteTodo=(id)=>{
-    setTodos((prev) => prev.filter((prevTodo) => prevTodo.id!==id))    // jo id match hogi voh nhi ayegi or baki saari id's aa jayengi , here we cn use map too but filter is better option
-}
+  useEffect(() => {        
+    const todos = JSON.parse(localStorage.getItem("todos"))    
+    if (todos && todos.length > 0) {
+      setTodos(todos)
+    }
+  }, [])
 
-const toggleComplete = (id) => {
-  setTodos((prev) => prev.map((prevTodo) => prevTodo.id=== id ? {...prevTodo,completed:!prevTodo.completed} :prevTodo))   // here we overwrite the todo which we want and by using spread operator we only chnage the completed property               
-}
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos))
+  }, [todos])
 
-useEffect(()=>{        // local storage so that when we refresh the page we dont lost thw data
- const todos = JSON.parse(localStorage.getItem("todos"))    // in local storage is in string but we need in json format
-
- if(todos && todos.length >0){
-  setTodos(todos)
- }
-
-},[])
-
-useEffect(()=>{
-  localStorage.setItem("todos",JSON.stringify(todos))  //here we set the todos and convert them into string from json 
-},[todos])
-
-
+ 
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "All") return true
+    if (filter === "Completed") return todo.completed
+    if (filter === "Pending") return !todo.completed
+    return todo.category === filter
+  })
 
   return (
-    <TodoProvider value={{todos,addTodo,updateTodo,deleteTodo,toggleComplete}}>
-    <div className="bg-[#172842] min-h-screen w-full ">
-                <div className="w-full max-w-2xl mx-auto shadow-md rounded-lg px-4 py-3 text-white">
-                    <h1 className="text-2xl font-bold text-center mb-8 mt-2">Manage Your Todos</h1>
-                    <div className="mb-4">
-                        {/* Todo form goes here */}    
-                        <TodoForm/>
-                    </div>
-                    <div className="flex flex-wrap gap-y-3"> 
-                        {/*Loop and Add TodoItem here */}
-                        {todos.map((todo) =>(
-                          <div key={todo.id}
-                          className='w-full '>      {/* as every todo is different */}
-                               <TodoItem todo={todo}/>
-                          </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+    <TodoProvider value={{ todos, addTodo, updateTodo, deleteTodo, toggleComplete }}>
+      <div className="bg-[#172842] min-h-screen w-full flex items-center justify-center">
+
+       
+        <div className="w-[90vw] max-w-[60vw] h-[90vh] max-h-[90vh] bg-gradient-to-br from-[#2e1a47] to-[#391a52] rounded-3xl shadow-2xl p-8 text-white overflow-y-auto transition-all duration-300">
+
+        
+          <h1 className="text-3xl font-bold text-center mb-6">📝 Manage Your Todos</h1>
+
+       
+          <div className="mb-4">
+            <TodoForm />
+          </div>
+
+      
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {["All", "Completed", "Pending", "Work", "Study", "Personal"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-1 rounded-full text-sm font-semibold transition duration-200 ${
+                  filter === f ? "bg-white text-black" : "bg-white/20 text-white hover:bg-white/40"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-y-3">
+            {filteredTodos.map((todo) => (
+              <TodoItem key={todo.id} todo={todo} />
+            ))}
+          </div>
+        </div>
+      </div>
     </TodoProvider>
   )
 }
